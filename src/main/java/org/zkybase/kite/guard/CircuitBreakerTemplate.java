@@ -73,6 +73,7 @@ public class CircuitBreakerTemplate extends AbstractGuard {
 	
 	// Configuration
 	private int exceptionThreshold = 5;
+	private String exceptionClasses = "java.lang.Exception";
 	private long timeout = 30000L;
 	private List<Class<? extends Exception>> handledExceptions = new ArrayList<Class<? extends Exception>>();
 
@@ -81,8 +82,18 @@ public class CircuitBreakerTemplate extends AbstractGuard {
 	private final AtomicInteger exceptionCount = new AtomicInteger();
 	private volatile long retryTime = NO_SCHEDULED_RETRY;
 	
-	public CircuitBreakerTemplate() { handledExceptions.add(Exception.class); }
+	public CircuitBreakerTemplate() {  handledExceptions.add(java.lang.Exception.class); }
 
+	/**
+	 * <p>
+	 * Returns the list of exception classes that can trigger failure counter for tripping.
+	 * </p>
+	 * 
+	 * @return exception classes that trigger failure counter
+	 */
+	@ManagedAttribute(description = "The list of exception classes on occurrence of which to increment the failure counter")
+	public String getExceptionClasses() { return exceptionClasses; }
+	
 	/**
 	 * <p>
 	 * Returns the exception threshold for this breaker. This is the number of
@@ -114,6 +125,54 @@ public class CircuitBreakerTemplate extends AbstractGuard {
 	public void setExceptionThreshold(int threshold) {
 		isTrue(threshold >= 1, "threshold must be >= 1");
 		this.exceptionThreshold = threshold;
+	}
+	
+	/**
+	 * <p>
+	 * Sets the list of exception classes that can trigger failure counter for tripping.
+	 * </p>
+	 * <p>
+	 * The default exception class is java.lang.Exception. This is overridden when this property is set.
+	 * </p>
+	 * 
+	 * @param threshold
+	 *            number of exceptions causing the breaker to trip
+	 * @throws IllegalArgumentException
+	 *             if threshold &lt; 1
+	 */
+	@SuppressWarnings("unchecked")
+	@ManagedAttribute(
+		description = "The list of exception classes on occurrence of which to increment the failure counter",
+		defaultValue = "java.lang.Exception")
+	public void setExceptionClasses(String exceptionClasses) {
+		this.exceptionClasses = exceptionClasses;
+		if(exceptionClasses != null && !exceptionClasses.isEmpty()){
+			String[] exClasses = exceptionClasses.split(",");
+			if (exClasses.length > 0) {
+				log.debug("Totally " + exClasses.length + " exception classes specified");
+				for (String exClass : exClasses) {
+					if (exClass != null && !exClass.trim().isEmpty()) {
+						try{
+							Class<?> clazz = Class.forName(exClass.trim());
+							if(java.lang.Exception.class.isAssignableFrom(clazz)){
+								handledExceptions.add((Class<? extends Exception>) clazz);
+							}else{
+								log.warn("The class "+exClass.trim()+" is not a subclass of java.lang.Exception");
+							}
+						}catch(Throwable ex){
+							log.warn("Unable to load class["+exClass.trim()+"] due to ["+ex.getLocalizedMessage()+"]");
+							log.trace("Unable to load class["+exClass.trim()+"] due to ["+ex.getLocalizedMessage()+"]", ex);
+						}
+					} else {
+						log.warn("Exception class \"" + exClass + "\" is either empty");
+					}
+				}
+			}
+		}
+		//Removing the default value when a value is explicitly set.
+		if(exceptionClasses != null && !exceptionClasses.contains("java.lang.Exception") && handledExceptions.size() > 1 && handledExceptions.contains(java.lang.Exception.class)){
+			handledExceptions.remove(java.lang.Exception.class);
+		}
 	}
 
 	/**
