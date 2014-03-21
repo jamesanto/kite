@@ -105,6 +105,7 @@ Creates a CircuitBreakerTemplate bean having the specified configuration.
 				<xsd:extension base="beans:identifiedType">
 					<xsd:attribute name="exceptionThreshold" type="xsd:integer" />
 					<xsd:attribute name="timeout" type="xsd:long" />
+					<xsd:attribute name="exceptionClasses" type="xsd:string" />
 				</xsd:extension>
 			</xsd:complexContent>
 		</xsd:complexType>
