@@ -84,6 +84,11 @@ public final class KiteObjectMother {
 			public String doInGuard() throws Exception {
 				return "good";
 			}
+			
+			@Override
+			public String getMethodName() {
+				return null;
+			}
 		};
 		
 		this.badBreakerAction = new GuardCallback<String>() {
@@ -92,11 +97,21 @@ public final class KiteObjectMother {
 				// is much faster than creating a new exception each time.
 				throw serviceException;
 			}
+
+			@Override
+			public String getMethodName() {
+				return null;
+			}
 		};
 		
 		this.breakerActionThatAlwaysThrowsSqlException = new GuardCallback<String>() {
 			public String doInGuard() throws Exception {
 				throw new SQLException();
+			}
+
+			@Override
+			public String getMethodName() {
+				return null;
 			}
 		};
 	}
@@ -106,12 +121,22 @@ public final class KiteObjectMother {
 			public String doInGuard() throws Exception {
 				return "good";
 			}
+
+			@Override
+			public String getMethodName() {
+				return null;
+			}
 		};
 		
 		this.slowThrottleAction = new GuardCallback<String>() {
 			public String doInGuard() throws Exception {
 				Thread.sleep(1000L);
 				return "good";
+			}
+
+			@Override
+			public String getMethodName() {
+				return null;
 			}
 		};
 	}

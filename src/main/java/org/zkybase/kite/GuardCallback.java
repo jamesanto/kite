@@ -28,4 +28,6 @@ public interface GuardCallback<T> {
 	 * @throws Exception if there's a problem executing the callback
 	 */
 	T doInGuard() throws Exception;
+	
+	String getMethodName();
 }

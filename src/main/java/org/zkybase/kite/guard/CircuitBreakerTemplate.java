@@ -320,7 +320,7 @@ public class CircuitBreakerTemplate extends AbstractGuard {
 			}
 
 		case OPEN:
-			throw new CircuitOpenException();
+			throw new CircuitOpenException(getName(), exceptionThreshold, timeout, exceptionClasses, action.getMethodName());
 
 		case HALF_OPEN:
 			try {

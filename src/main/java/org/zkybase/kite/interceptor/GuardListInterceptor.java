@@ -61,7 +61,7 @@ public class GuardListInterceptor implements MethodInterceptor {
 		
 		while (!guardStack.isEmpty()) {
 			Guard guard = guardStack.pop();
-			interceptor = new NotLastInterceptor(guard, interceptor);
+			interceptor = new NotLastInterceptor(guard, interceptor, invocation);
 		}
 		
 		return interceptor.invoke();
@@ -85,10 +85,12 @@ public class GuardListInterceptor implements MethodInterceptor {
 	private static class NotLastInterceptor implements Interceptor {
 		private Guard guard;
 		private Interceptor interceptor;
+		private MethodInvocation invocation;
 		
-		public NotLastInterceptor(Guard guard, Interceptor interceptor) {
+		public NotLastInterceptor(Guard guard, Interceptor interceptor, MethodInvocation invocation) {
 			this.guard = guard;
 			this.interceptor = interceptor;
+			this.invocation = invocation;
 		}
 		
 		@Override
@@ -110,6 +112,11 @@ public class GuardListInterceptor implements MethodInterceptor {
 					} finally {
 						log.debug("Exiting guard: {}", guard.getName());
 					}
+				}
+				
+				@Override
+				public String getMethodName() {
+					return invocation.getMethod().toGenericString();
 				}
 			});
 		}
@@ -144,6 +151,11 @@ public class GuardListInterceptor implements MethodInterceptor {
 					} finally {
 						log.debug("Exiting guard: {}", guard.getName());
 					}
+				}
+				
+				@Override
+				public String getMethodName() {
+					return invocation.getMethod().toGenericString();
 				}
 			});
 		}

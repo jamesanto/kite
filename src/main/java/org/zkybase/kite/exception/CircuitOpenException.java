@@ -16,7 +16,8 @@
 package org.zkybase.kite.exception;
 
 /**
- * Runtime exception indicating that a call protected by a circuit breaker failed due to an open circuit.
+ * Runtime exception indicating that a call protected by a circuit breaker
+ * failed due to an open circuit.
  * 
  * @author Willie Wheeler (willie.wheeler@gmail.com)
  * @since 1.0
@@ -24,7 +25,68 @@ package org.zkybase.kite.exception;
 @SuppressWarnings("serial")
 public class CircuitOpenException extends GuardException {
 
-	public CircuitOpenException() {
+	private String circuitBreakerName;
+
+	private int exceptionThreshold;
+
+	private long timeout;
+
+	private String exceptionClasses;
+
+	private String methodName;
+
+	/*public CircuitOpenException() {
 		super("Circuit open");
+	}*/
+
+	public CircuitOpenException(String circuitBreakerName, int exceptionThreshold, long timeout, String exceptionClasses, String methodName) {
+		super("Circuit open due to " + exceptionThreshold + " failure calls to [" + methodName + "]. Reattempt will be made after " + timeout
+				+ "(ms).");
+		this.circuitBreakerName = circuitBreakerName;
+		this.exceptionThreshold = exceptionThreshold;
+		this.timeout = timeout;
+		this.exceptionClasses = exceptionClasses;
+		this.methodName = methodName;
 	}
+
+	public String getCircuitBreakerName() {
+		return circuitBreakerName;
+	}
+
+	public void setCircuitBreakerName(String circuitBreakerName) {
+		this.circuitBreakerName = circuitBreakerName;
+	}
+
+	public int getExceptionThreshold() {
+		return exceptionThreshold;
+	}
+
+	public void setExceptionThreshold(int exceptionThreshold) {
+		this.exceptionThreshold = exceptionThreshold;
+	}
+
+	public long getTimeout() {
+		return timeout;
+	}
+
+	public void setTimeout(long timeout) {
+		this.timeout = timeout;
+	}
+
+	public String getExceptionClasses() {
+		return exceptionClasses;
+	}
+
+	public void setExceptionClasses(String exceptionClasses) {
+		this.exceptionClasses = exceptionClasses;
+	}
+
+	public String getMethodName() {
+		return methodName;
+	}
+
+	public void setMethodName(String methodName) {
+		this.methodName = methodName;
+	}
+
 }
