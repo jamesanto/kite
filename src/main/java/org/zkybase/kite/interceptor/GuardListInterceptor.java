@@ -16,12 +16,15 @@
 package org.zkybase.kite.interceptor;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethodBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zkybase.kite.Guard;
@@ -68,13 +71,13 @@ public class GuardListInterceptor implements MethodInterceptor {
 	}
 	
 	private List<Guard> getGuards(MethodInvocation invocation) {
-		Method method = invocation.getMethod();
+//		Method method = invocation.getMethod();
+//		
+//		// thisObj can be null if the invocation's static part (i.e. static joinpoint) is static (i.e. class-scoped)
+//		Object thisObj = invocation.getThis();
+//		Class<?> clazz = (thisObj != null ? thisObj.getClass() : null);
 		
-		// thisObj can be null if the invocation's static part (i.e. static joinpoint) is static (i.e. class-scoped)
-		Object thisObj = invocation.getThis();
-		Class<?> clazz = (thisObj != null ? thisObj.getClass() : null);
-		
-		return source.getGuards(method, clazz);
+		return source.getDefaultGuards();
 	}
 	
 	private static interface Interceptor {
@@ -118,6 +121,16 @@ public class GuardListInterceptor implements MethodInterceptor {
 				public String getMethodName() {
 					return invocation.getMethod().toGenericString();
 				}
+				
+				@Override
+				public HttpClient getClient() {
+					return (HttpClient) invocation.getThis();
+				}
+				
+				@Override
+				public HttpMethodBase getMethod() {
+					return (HttpMethodBase) invocation.getArguments()[1];
+				}
 			});
 		}
 	}
@@ -156,6 +169,16 @@ public class GuardListInterceptor implements MethodInterceptor {
 				@Override
 				public String getMethodName() {
 					return invocation.getMethod().toGenericString();
+				}
+				
+				@Override
+				public HttpClient getClient() {
+					return (HttpClient) invocation.getThis();
+				}
+				
+				@Override
+				public HttpMethodBase getMethod() {
+					return (HttpMethodBase) invocation.getArguments()[1];
 				}
 			});
 		}

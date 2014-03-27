@@ -23,6 +23,8 @@ import java.lang.reflect.Method;
 import java.sql.SQLException;
 
 import org.aopalliance.intercept.MethodInvocation;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethodBase;
 import org.zkybase.kite.GuardCallback;
 import org.zkybase.kite.guard.CircuitBreakerTemplate;
 
@@ -89,6 +91,18 @@ public final class KiteObjectMother {
 			public String getMethodName() {
 				return null;
 			}
+
+			@Override
+			public HttpClient getClient() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public HttpMethodBase getMethod() {
+				// TODO Auto-generated method stub
+				return null;
+			}
 		};
 		
 		this.badBreakerAction = new GuardCallback<String>() {
@@ -102,6 +116,18 @@ public final class KiteObjectMother {
 			public String getMethodName() {
 				return null;
 			}
+
+			@Override
+			public HttpClient getClient() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public HttpMethodBase getMethod() {
+				// TODO Auto-generated method stub
+				return null;
+			}
 		};
 		
 		this.breakerActionThatAlwaysThrowsSqlException = new GuardCallback<String>() {
@@ -111,6 +137,18 @@ public final class KiteObjectMother {
 
 			@Override
 			public String getMethodName() {
+				return null;
+			}
+
+			@Override
+			public HttpClient getClient() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public HttpMethodBase getMethod() {
+				// TODO Auto-generated method stub
 				return null;
 			}
 		};
@@ -126,6 +164,18 @@ public final class KiteObjectMother {
 			public String getMethodName() {
 				return null;
 			}
+
+			@Override
+			public HttpClient getClient() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public HttpMethodBase getMethod() {
+				// TODO Auto-generated method stub
+				return null;
+			}
 		};
 		
 		this.slowThrottleAction = new GuardCallback<String>() {
@@ -136,6 +186,18 @@ public final class KiteObjectMother {
 
 			@Override
 			public String getMethodName() {
+				return null;
+			}
+			
+			@Override
+			public HttpClient getClient() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public HttpMethodBase getMethod() {
+				// TODO Auto-generated method stub
 				return null;
 			}
 		};

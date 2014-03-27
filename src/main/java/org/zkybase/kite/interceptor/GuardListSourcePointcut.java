@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.support.JdkRegexpMethodPointcut;
 import org.springframework.aop.support.StaticMethodMatcherPointcut;
 import org.springframework.util.ObjectUtils;
 
@@ -28,7 +29,7 @@ import org.springframework.util.ObjectUtils;
  * @author Willie Wheeler (willie.wheeler@gmail.com)
  */
 @SuppressWarnings("serial")
-public class GuardListSourcePointcut extends StaticMethodMatcherPointcut implements Serializable {
+public class GuardListSourcePointcut extends JdkRegexpMethodPointcut implements Serializable {
 	private static final Logger log = LoggerFactory.getLogger(GuardListSourcePointcut.class);
 	
 	private GuardListSource source;
@@ -40,18 +41,32 @@ public class GuardListSourcePointcut extends StaticMethodMatcherPointcut impleme
 	/* (non-Javadoc)
 	 * @see org.springframework.aop.MethodMatcher#matches(java.lang.reflect.Method, java.lang.Class)
 	 */
-	@Override
-	public boolean matches(Method method, Class<?> targetClass) {
-		if (source == null) {
-			throw new IllegalStateException("source can't be null");
-		}
-		
-		boolean match = (source.getGuards(method, targetClass) != null);
-		if (match) {
-			log.debug("Found pointcut match for {}.{}", targetClass.getName(), method.getName());
-		}
-		return match;
-	}
+//	@Override
+//	public boolean matches(Method method, Class<?> targetClass) {
+//		
+//		System.out.println("TARGET CLASS : "+targetClass.getCanonicalName());
+//		if (source == null) {
+//			throw new IllegalStateException("source can't be null");
+//		}
+//		
+//		//FIXME: Hardcoded class name and method signature.
+//		String className = "org.apache.commons.httpclient.HttpClient";
+//		String methodName = "public int org.apache.commons.httpclient.HttpClient.executeMethod(org.apache.commons.httpclient.HostConfiguration,org.apache.commons.httpclient.HttpMethod,org.apache.commons.httpclient.HttpState)";
+//		
+//		Class<?> sourceClass = null;
+//		try{
+//			sourceClass = Class.forName(className);
+//		}catch(Throwable ex){
+//			log.error("Could not load class", ex);
+//		}
+//		
+//		boolean match = targetClass.isAssignableFrom(sourceClass);
+//		match = match && method.toGenericString().startsWith(methodName);
+//		if (match) {
+//			log.debug("Found pointcut match for {}.{}", targetClass.getName(), method.getName());
+//		}
+//		return match;
+//	}
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -75,5 +90,7 @@ public class GuardListSourcePointcut extends StaticMethodMatcherPointcut impleme
 	 */
 	@Override
 	public String toString() { return getClass().getName() + ": " + source; }
+	
+	
 
 }

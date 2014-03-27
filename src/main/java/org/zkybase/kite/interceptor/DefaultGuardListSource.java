@@ -38,4 +38,9 @@ public class DefaultGuardListSource implements GuardListSource {
 	 */
 	@Override
 	public List<Guard> getGuards(Method method, Class<?> targetClass) { return guards; }
+	
+	@Override
+	public List<Guard> getDefaultGuards() {
+		return guards;
+	}
 }

@@ -81,4 +81,12 @@ public class AnnotationGuardListSource implements GuardListSource, BeanFactoryAw
 		}
 		return guards;
 	}
+	
+	@Override
+	public List<Guard> getDefaultGuards() {
+		//FIXME: Hardcoded guard name.
+		List<Guard> guards = new ArrayList<Guard>();
+		guards.add(beanFactory.getBean("messageServiceBreaker", Guard.class));
+		return guards;
+	}
 }

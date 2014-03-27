@@ -19,9 +19,15 @@ import static org.springframework.util.Assert.isTrue;
 import static org.springframework.util.Assert.notNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethodBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
@@ -71,6 +77,8 @@ public class CircuitBreakerTemplate extends AbstractGuard {
 	private static final long NO_SCHEDULED_RETRY = Long.MAX_VALUE;
 	private static Logger log = LoggerFactory.getLogger(CircuitBreakerTemplate.class);
 	
+	private static volatile Map<HttpClient, HttpMethodBase> cache = new HashMap<HttpClient, HttpMethodBase>();
+	
 	// Configuration
 	private int exceptionThreshold = 5;
 	private String exceptionClasses = "java.lang.Exception";
@@ -83,6 +91,8 @@ public class CircuitBreakerTemplate extends AbstractGuard {
 	private volatile long retryTime = NO_SCHEDULED_RETRY;
 	
 	public CircuitBreakerTemplate() {  handledExceptions.add(java.lang.Exception.class); }
+	
+	private Timer timer = new Timer();
 
 	/**
 	 * <p>
@@ -308,6 +318,7 @@ public class CircuitBreakerTemplate extends AbstractGuard {
 		case CLOSED:
 			try {
 				T value = action.doInGuard();
+				releaseConnection(action.getMethod());
 				this.exceptionCount.set(0);
 				return value;
 			} catch (Exception e) {
@@ -335,6 +346,27 @@ public class CircuitBreakerTemplate extends AbstractGuard {
 		default:
 			// This shouldn't happen...
 			throw new IllegalStateException("Unknown state: " + currState);
+		}
+	}
+	
+	private void releaseConnection(HttpMethodBase method){
+		releaseCon(method, 2000, 3);
+	}
+	
+	private void releaseCon(final HttpMethodBase method, final long delay, final int leftTries){
+		if (leftTries > 0) {
+			timer.schedule(new TimerTask() {
+
+				@Override
+				public void run() {
+					if(method.hasBeenUsed()){
+						method.releaseConnection();
+					}else{
+						releaseCon(method, delay, (leftTries -1));
+					}
+
+				}
+			}, delay);
 		}
 	}
 

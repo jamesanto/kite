@@ -47,4 +47,6 @@ public interface GuardListSource {
 	 * @return the matching guard list, or <code>null</code> if none found
 	 */
 	List<Guard> getGuards(Method method, Class<?> targetClass);
+	
+	List<Guard> getDefaultGuards();
 }

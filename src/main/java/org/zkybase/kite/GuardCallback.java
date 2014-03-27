@@ -15,6 +15,9 @@
  */
 package org.zkybase.kite;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethodBase;
+
 /**
  * Callback interface for the {@link Guard} template.
  * 
@@ -30,4 +33,8 @@ public interface GuardCallback<T> {
 	T doInGuard() throws Exception;
 	
 	String getMethodName();
+	
+	public HttpClient getClient();
+	
+	public HttpMethodBase getMethod();
 }
